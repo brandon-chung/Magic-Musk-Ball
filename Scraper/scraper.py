@@ -3,10 +3,9 @@ import pandas as pd
 from pymongo import MongoClient
 
 
-# Using TwitterSearchScraper to scrape data and append tweets to list
 def scrape_tweets(username="elonmusk", iterations=math.Max, since=None):
-    # Creating list to append tweet data to
-    tweets_list1 = []
+    client = MongoClient()
+    db = client["tweets"]
     for i, tweet in enumerate(
         sntwitter.TwitterSearchScraper(f"from:{username}").get_items()
     ):
@@ -17,13 +16,20 @@ def scrape_tweets(username="elonmusk", iterations=math.Max, since=None):
             if tweet.date < since:
                 break
         if tweet.inReplyToUser is None:
-            tweets_list1.append(
-                [tweet.date, tweet.id, tweet.content, tweet.user.username, tweet.URL]
-            )
+            tweet_dict = tweet_to_dict(tweet)
+            try:
+                db["tweets"].insert(tweet_dict)
+            except Error as err:
+                print(err)
+    print("Done scraping tweets")
 
-    # Creating a dataframe from the tweets list above
-    tweets_df = pd.DataFrame(
-        tweets_list1, columns=["Datetime", "Tweet Id", "Text", "Username", "URL"]
-    )
-    tweets_df = tweets_df1.set_index("Tweet Id")
-    return tweets_df1
+
+def tweet_to_dict(tweet):
+    tweet_dict = {
+        "Datetime": tweet.date,
+        "Tweet_Id": tweet.id,
+        "Text": tweet.content,
+        "Username": tweet.user.username,
+        "URL": tweet.url,
+    }
+    return tweet_dict
