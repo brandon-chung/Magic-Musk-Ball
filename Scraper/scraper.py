@@ -1,11 +1,15 @@
 import snscrape.modules.twitter as sntwitter
 import pandas as pd
 from pymongo import MongoClient
+import json
+import datetime
+import pytz
 
 
-def scrape_tweets(username="elonmusk", iterations=math.Max, since=None):
+def scrape_tweets(username="elonmusk", iterations=10000, since=None):
     client = MongoClient()
     db = client["tweets"]
+
     for i, tweet in enumerate(
         sntwitter.TwitterSearchScraper(f"from:{username}").get_items()
     ):
@@ -21,6 +25,7 @@ def scrape_tweets(username="elonmusk", iterations=math.Max, since=None):
                 db["tweets"].insert(tweet_dict)
             except Error as err:
                 print(err)
+
     print("Done scraping tweets")
 
 
