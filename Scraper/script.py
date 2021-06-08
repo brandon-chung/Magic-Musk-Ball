@@ -10,7 +10,7 @@ new_date = pytz.utc.localize(datetime.datetime.now())
 new_date = new_date.strftime(f"%m/%d/%Y, %H:%M:%S {new_date.tzinfo}")
 last_update = config.get("last_update", None)
 last_update = datetime.datetime.strptime(
-    last_update, f"%m/%d/%Y, %H:%M:%S {utc_now.tzinfo}"
+    last_update, f"%m/%d/%Y, %H:%M:%S {last_update.tzinfo}"
 )
 last_update = pytz.utc.localize(last_update)
 
