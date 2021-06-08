@@ -9,9 +9,7 @@ with open("config.json", "r") as f:
 new_date = pytz.utc.localize(datetime.datetime.now())
 new_date = new_date.strftime(f"%m/%d/%Y, %H:%M:%S {new_date.tzinfo}")
 last_update = config.get("last_update", None)
-last_update = datetime.datetime.strptime(
-    last_update, f"%m/%d/%Y, %H:%M:%S {last_update.tzinfo}"
-)
+last_update = datetime.datetime.strptime(last_update, f"%m/%d/%Y, %H:%M:%S UTC")
 last_update = pytz.utc.localize(last_update)
 
 scraper.scrape_tweets(since=last_update)
