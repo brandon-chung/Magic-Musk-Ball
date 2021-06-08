@@ -1,12 +1,13 @@
 import snscrape.modules.twitter as sntwitter
 import pandas as pd
 from pymongo import MongoClient
+from pymongo.errors import DuplicateKeyError
 import json
 import datetime
 import pytz
 
 
-def scrape_tweets(username="elonmusk", iterations=10000, since=None):
+def scrape_tweets(username="elonmusk", iterations=None, since=None):
     client = MongoClient()
     db = client["tweets"]
 
@@ -19,11 +20,11 @@ def scrape_tweets(username="elonmusk", iterations=10000, since=None):
         if since is not None:
             if tweet.date < since:
                 break
-        if tweet.inReplyToUser is None:
+        if not tweet.inReplyToUser:
             tweet_dict = tweet_to_dict(tweet)
             try:
-                db["tweets"].insert(tweet_dict)
-            except Error as err:
+                db[username].insert(tweet_dict)
+            except DuplicateKeyError as err:
                 print(err)
 
     print("Done scraping tweets")
